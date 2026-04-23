@@ -1,11 +1,16 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../services/secure_storage_service.dart';
-import '../models/user.dart';
+import 'package:go_router/go_router.dart';
 import '../../features/auth/bloc/auth_bloc.dart';
 import '../../features/auth/bloc/auth_state.dart';
+import '../../core/services/onboarding_service.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/signup_screen.dart';
+import '../../features/auth/presentation/screens/reset_password_screen.dart';
+import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/dashboard/presentation/screens/customer_dashboard_screen.dart';
 import '../../features/dashboard/presentation/screens/staff_dashboard_screen.dart';
 import '../../features/leads/presentation/screens/leads_list_screen.dart';
@@ -20,24 +25,48 @@ import '../../features/products/presentation/screens/products_catalog_screen.dar
 import '../../features/products/presentation/screens/cart_screen.dart';
 
 class AppRouter {
-  final SecureStorageService _storageService = SecureStorageService();
+  final ValueNotifier<bool> _onboardingStatus;
+  final OnboardingService _onboardingService;
+
+  AppRouter({
+    required OnboardingService onboardingService,
+    required ValueNotifier<bool> onboardingStatus,
+  }) : _onboardingService = onboardingService,
+       _onboardingStatus = onboardingStatus;
 
   GoRouter createRouter(AuthBloc authBloc) {
     return GoRouter(
-      initialLocation: '/login',
-      refreshListenable: GoRouterRefreshStream(authBloc.stream),
+      initialLocation: '/onboarding',
+      refreshListenable: GoRouterRefreshStream(
+        authBloc.stream,
+        _onboardingStatus,
+      ),
       redirect: (context, state) {
         final authState = authBloc.state;
         final isAuthenticated = authState is AuthAuthenticated;
 
+        final isOnboardingRoute = state.matchedLocation == '/onboarding';
         final isLoginRoute = state.matchedLocation == '/login';
-        final isDashboardRoute = state.matchedLocation == '/dashboard';
+        final isSignupRoute = state.matchedLocation == '/signup';
+        final isResetPasswordRoute = state.matchedLocation == '/reset-password';
+        final isAuthRoute =
+            isLoginRoute || isSignupRoute || isResetPasswordRoute;
 
-        if (!isAuthenticated && !isLoginRoute) {
+        final onboardingCompleted = _onboardingStatus.value;
+
+        if (!onboardingCompleted && !isOnboardingRoute) {
+          return '/onboarding';
+        }
+
+        if (onboardingCompleted && isOnboardingRoute) {
           return '/login';
         }
 
-        if (isAuthenticated && isLoginRoute) {
+        if (!isAuthenticated && !isAuthRoute && onboardingCompleted) {
+          return '/login';
+        }
+
+        if (isAuthenticated && isAuthRoute) {
           return '/dashboard';
         }
 
@@ -45,9 +74,29 @@ class AppRouter {
       },
       routes: [
         GoRoute(
+          path: '/onboarding',
+          name: 'onboarding',
+          builder: (context, state) => OnboardingScreen(
+            onComplete: () async {
+              await _onboardingService.markCompleted();
+              _onboardingStatus.value = true;
+            },
+          ),
+        ),
+        GoRoute(
           path: '/login',
           name: 'login',
           builder: (context, state) => const LoginScreen(),
+        ),
+        GoRoute(
+          path: '/signup',
+          name: 'signup',
+          builder: (context, state) => const SignupScreen(),
+        ),
+        GoRoute(
+          path: '/reset-password',
+          name: 'resetPassword',
+          builder: (context, state) => const ResetPasswordScreen(),
         ),
         GoRoute(
           path: '/dashboard',
@@ -158,11 +207,21 @@ class AppRouter {
 }
 
 class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyOnChange(stream);
+  late final StreamSubscription<dynamic> _subscription;
+  final ValueListenable<bool> _onboardingStatus;
+
+  GoRouterRefreshStream(
+    Stream<dynamic> stream,
+    ValueListenable<bool> onboardingStatus,
+  ) : _onboardingStatus = onboardingStatus {
+    _onboardingStatus.addListener(notifyListeners);
+    _subscription = stream.listen((dynamic _) => notifyListeners());
   }
 
-  void notifyOnChange(Stream<dynamic> stream) {
-    stream.listen((dynamic _) => notifyListeners());
+  @override
+  void dispose() {
+    _onboardingStatus.removeListener(notifyListeners);
+    _subscription.cancel();
+    super.dispose();
   }
 }
