@@ -6,6 +6,7 @@ import 'package:sunspot/shared/widgets/navigation/app_drawer.dart';
 class ScreenWrapper extends StatelessWidget {
   final Widget child;
   final String? title;
+  final Color? appBarTitleColor;
   final List<Widget>? actions;
   final bool showDrawer;
   final String? userRole;
@@ -15,6 +16,7 @@ class ScreenWrapper extends StatelessWidget {
     super.key,
     required this.child,
     this.title,
+    this.appBarTitleColor,
     this.actions,
     this.showDrawer = false,
     this.userRole,
@@ -35,7 +37,16 @@ class ScreenWrapper extends StatelessWidget {
           : null,
       appBar: title != null
           ? AppBar(
-              title: Text(title!),
+              title: Text(
+                title!,
+                style: Theme.of(context).appBarTheme.titleTextStyle?.copyWith(
+                  color:
+                      appBarTitleColor ??
+                      (Theme.of(context).brightness == Brightness.light
+                          ? Colors.black
+                          : Colors.white),
+                ),
+              ),
               actions: actions,
               automaticallyImplyLeading: showDrawer,
             )

@@ -1,13 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sunspot/core/theme/app_colors.dart';
 import 'package:sunspot/core/theme/app_spacing.dart';
 import 'package:sunspot/core/theme/app_text_styles.dart';
 import 'package:sunspot/features/auth/bloc/auth_bloc.dart';
 import 'package:sunspot/features/auth/bloc/auth_event.dart';
 
-class AppDrawer extends StatelessWidget {
+class AppDrawer extends StatefulWidget {
   final String currentRoute;
   final String userRole;
   final String userName;
@@ -20,8 +22,26 @@ class AppDrawer extends StatelessWidget {
   });
 
   @override
+  State<AppDrawer> createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  final ImagePicker _imagePicker = ImagePicker();
+  File? _selectedImage;
+
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? image = await _imagePicker.pickImage(source: source);
+    if (image != null) {
+      setState(() {
+        _selectedImage = File(image.path);
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Drawer(
+      width: MediaQuery.of(context).size.width,
       backgroundColor: AppColors.background,
       child: SafeArea(
         child: Column(
@@ -38,7 +58,7 @@ class AppDrawer extends StatelessWidget {
                     label: 'Dashboard',
                     route: '/dashboard',
                   ),
-                  if (userRole == 'staff') ...[
+                  if (widget.userRole == 'staff') ...[
                     _buildMenuItem(
                       context,
                       icon: Icons.people_outline,
@@ -64,7 +84,7 @@ class AppDrawer extends StatelessWidget {
                       route: '/dashboard/orders',
                     ),
                   ],
-                  if (userRole == 'customer') ...[
+                  if (widget.userRole == 'customer') ...[
                     _buildMenuItem(
                       context,
                       icon: Icons.shopping_bag_outlined,
@@ -134,20 +154,38 @@ class AppDrawer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 32,
-            backgroundColor: AppColors.primary,
-            child: Text(
-              userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+          GestureDetector(
+            onTap: () {
+              if (widget.userRole == 'customer') {
+                _showPhotoUploadDialog(context);
+              }
+            },
+            child: CircleAvatar(
+              radius: 40,
+              backgroundColor: AppColors.primary,
+              child: _selectedImage != null
+                  ? ClipOval(
+                      child: Image.file(
+                        _selectedImage!,
+                        fit: BoxFit.cover,
+                        width: 80,
+                        height: 80,
+                      ),
+                    )
+                  : Text(
+                      widget.userName.isNotEmpty
+                          ? widget.userName[0].toUpperCase()
+                          : 'U',
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
             ),
           ),
           const SizedBox(height: 12),
-          Text(userName, style: AppTextStyles.h3),
+          Text(widget.userName, style: AppTextStyles.h3),
           const SizedBox(height: 4),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -156,7 +194,7 @@ class AppDrawer extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              userRole.toUpperCase(),
+              widget.userRole.toUpperCase(),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -170,13 +208,177 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
+  void _showPhotoUploadDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: Theme.of(context).brightness == Brightness.dark
+                  ? [const Color(0xFF1F2937), const Color(0xFF374151)]
+                  : [
+                      const Color(0xFFF59E0B).withOpacity(0.1),
+                      const Color(0xFFD97706).withOpacity(0.1),
+                    ],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: const Color(0xFFF59E0B).withOpacity(0.3),
+              width: 2,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Upload Profile Photo',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : const Color(0xFF111827),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(
+                      Icons.close,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : const Color(0xFF111827),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (_selectedImage != null)
+                Container(
+                  height: 200,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    image: DecorationImage(
+                      image: FileImage(_selectedImage!),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedImage = null;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Container(
+                  height: 150,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF374151)
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF4B5563)
+                          : const Color(0xFFE5E7EB),
+                      width: 2,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.cloud_upload_outlined,
+                          size: 40,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF9CA3AF)
+                              : const Color(0xFFD1D5DB),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Tap to upload',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF9CA3AF)
+                                : const Color(0xFF6B7280),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildAnimatedButton(
+                      icon: Icons.camera_alt,
+                      label: 'Camera',
+                      onTap: () {
+                        _pickImage(ImageSource.camera);
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildAnimatedButton(
+                      icon: Icons.photo_library,
+                      label: 'Gallery',
+                      onTap: () {
+                        _pickImage(ImageSource.gallery);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildMenuItem(
     BuildContext context, {
     required IconData icon,
     required String label,
     required String route,
   }) {
-    final isSelected = currentRoute.contains(route);
+    final isSelected = widget.currentRoute.contains(route);
 
     return ListTile(
       leading: Icon(
@@ -227,7 +429,7 @@ class AppDrawer extends StatelessWidget {
   }
 
   Color _getRoleColor() {
-    switch (userRole) {
+    switch (widget.userRole) {
       case 'staff':
         return AppColors.primary;
       case 'customer':
@@ -235,5 +437,40 @@ class AppDrawer extends StatelessWidget {
       default:
         return AppColors.textMuted;
     }
+  }
+
+  Widget _buildAnimatedButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF374151)
+              : const Color(0xFFF59E0B),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

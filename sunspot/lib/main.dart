@@ -4,6 +4,7 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/theme_bloc.dart';
 import 'core/services/api_service.dart';
 import 'core/services/secure_storage_service.dart';
+import 'core/services/onboarding_service.dart';
 import 'core/router/app_router.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/data/auth_repository.dart';
@@ -19,12 +20,31 @@ import 'features/products/bloc/products_bloc.dart';
 import 'features/products/bloc/cart_bloc.dart';
 import 'features/products/data/products_repository.dart';
 
-void main() {
-  runApp(const SunspotApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final secureStorageService = SecureStorageService();
+  final onboardingService = OnboardingService(secureStorageService);
+  final onboardingCompleted = await onboardingService.isCompleted();
+  final onboardingStatus = ValueNotifier<bool>(onboardingCompleted);
+
+  runApp(
+    SunspotApp(
+      onboardingService: onboardingService,
+      onboardingStatus: onboardingStatus,
+    ),
+  );
 }
 
 class SunspotApp extends StatelessWidget {
-  const SunspotApp({super.key});
+  final OnboardingService onboardingService;
+  final ValueNotifier<bool> onboardingStatus;
+
+  const SunspotApp({
+    super.key,
+    required this.onboardingService,
+    required this.onboardingStatus,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +91,10 @@ class SunspotApp extends StatelessWidget {
             themeMode: themeState.mode == AppThemeMode.dark
                 ? ThemeMode.dark
                 : ThemeMode.light,
-            routerConfig: AppRouter().createRouter(authBloc),
+            routerConfig: AppRouter(
+              onboardingService: onboardingService,
+              onboardingStatus: onboardingStatus,
+            ).createRouter(authBloc),
           );
         },
       ),

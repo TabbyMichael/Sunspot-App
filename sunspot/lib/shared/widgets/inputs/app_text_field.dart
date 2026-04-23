@@ -23,14 +23,20 @@ class AppTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLightMode = Theme.of(context).brightness == Brightness.light;
+    final textColor = isLightMode ? Colors.black : Colors.white;
+    final hintColor = isLightMode ? Colors.black : const Color(0xFF9CA3AF);
+
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
       maxLines: maxLines,
+      style: TextStyle(color: textColor),
       decoration: InputDecoration(
         hintText: hint,
+        hintStyle: TextStyle(color: hintColor),
         suffixIcon: suffixIcon,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
