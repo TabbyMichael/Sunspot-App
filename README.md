@@ -2,6 +2,11 @@
 
 A comprehensive Flutter-based solar energy management application designed for solar companies to manage leads, installations, quotes, orders, and e-commerce operations. The app features role-based access control, real-time state management, and a modern dark/light theme UI.
 
+![Sunspot Banner](sunspot/assets/1.png)
+
+
+![Sunspot Banner](sunspot/assets/2.png)
+
 ## 🌟 Features
 
 ### Core Features
@@ -9,6 +14,11 @@ A comprehensive Flutter-based solar energy management application designed for s
 - **Dark/Light Theme**: Dynamic theme switching with persistent state
 - **Navigation Drawer**: Context-aware navigation based on user role
 - **Real-time State Management**: BLoC pattern for efficient state handling
+
+![Sunspot Banner](sunspot/assets/3.png)
+
+
+![Sunspot Banner](sunspot/assets/4.png)
 
 ### Lead Management
 - View and manage customer leads
@@ -23,6 +33,11 @@ A comprehensive Flutter-based solar energy management application designed for s
 - Visual progress indicators
 - Installation history and details
 
+![Sunspot Banner](sunspot/assets/5.png)
+
+
+![Sunspot Banner](sunspot/assets/6.png)
+
 ### Quotes Management
 - Create and manage quotes
 - Track quote status
@@ -34,6 +49,11 @@ A comprehensive Flutter-based solar energy management application designed for s
 - Monitor order status
 - Order history and details
 - Demo order data
+
+![Sunspot Banner](sunspot/assets/7.png)
+
+
+![Sunspot Banner](sunspot/assets/8.png)
 
 ### E-commerce
 - **Product Catalog**: Browse solar products with images, ratings, and reviews
@@ -54,6 +74,9 @@ A comprehensive Flutter-based solar energy management application designed for s
 - Theme toggle (Dark/Light mode)
 - Push notifications preferences
 - Logout functionality
+
+![Sunspot Banner](sunspot/assets/9.png)
+![Sunspot Banner](sunspot/assets/10.png)
 
 ## 🛠 Tech Stack
 

@@ -4,6 +4,12 @@ Sunspot is a modern Flutter application for managing the full solar customer and
 
 Built for solar teams that need speed, clarity, and a mobile-first experience, Sunspot turns fragmented workflows into a connected platform.
 
+![Sunspot Banner](/assets/1.png)
+
+
+![Sunspot Banner](/assets/2.png)
+
+
 ## Vision
 
 Sunspot is designed to be the digital operating system for a solar business.
@@ -13,6 +19,12 @@ Instead of splitting work across spreadsheets, messaging apps, admin portals, an
 - customers can explore products, request quotes, track orders, and monitor their installation journey
 - internal teams can manage leads, quotes, orders, and field progress from one interface
 - both sides stay aligned through real-time visibility and role-aware workflows
+
+![Sunspot Banner](/assets/3.png)
+
+
+![Sunspot Banner](/assets/4.png)
+
 
 ## Core Experience
 
@@ -28,6 +40,12 @@ Sunspot currently delivers a multi-feature mobile application with:
 - notifications and settings screens
 - light mode and dark mode support
 
+![Sunspot Banner](/assets/5.png)
+
+
+![Sunspot Banner](/assets/6.png)
+
+
 ## Product Highlights
 
 ### Customer App
@@ -36,6 +54,12 @@ Sunspot currently delivers a multi-feature mobile application with:
 - in-app solar shopping experience with product cards and cart flow
 - visibility into quotes, active orders, and installation progress
 - simple, mobile-first navigation for non-technical users
+
+![Sunspot Banner](/assets/7.png)
+
+
+![Sunspot Banner](/assets/8.png)
+
 
 ### Staff App
 
@@ -79,6 +103,13 @@ lib/
   shared/
     widgets/
 ```
+
+
+![Sunspot Banner](/assets/9.png)
+
+
+![Sunspot Banner](/assets/10.png)
+
 
 ### Design Principles
 
