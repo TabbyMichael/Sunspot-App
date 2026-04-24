@@ -4,10 +4,10 @@ Sunspot is a modern Flutter application for managing the full solar customer and
 
 Built for solar teams that need speed, clarity, and a mobile-first experience, Sunspot turns fragmented workflows into a connected platform.
 
-<img src="/assets/1.png" width="300" height="300" />
+<img src="/assets/1.png" width="600" height="700" />
 
 
-<img src="/assets/2.png" width="300" height="300" />
+<img src="/assets/2.png" width="600" height="700" />
 
 
 ## Vision
@@ -20,10 +20,10 @@ Instead of splitting work across spreadsheets, messaging apps, admin portals, an
 - internal teams can manage leads, quotes, orders, and field progress from one interface
 - both sides stay aligned through real-time visibility and role-aware workflows
 
-<img src="/assets/3.png" width="300" height="300" />
+<img src="/assets/3.png" width="600" height="700" />
 
 
-<img src="/assets/4.png" width="300" height="300" />
+<img src="/assets/4.png" width="600" height="700" />
 
 
 ## Core Experience
@@ -40,10 +40,10 @@ Sunspot currently delivers a multi-feature mobile application with:
 - notifications and settings screens
 - light mode and dark mode support
 
-<img src="/assets/5.png" width="300" height="300" />
+<img src="/assets/5.png" width="600" height="700" />
 
 
-<img src="/assets/6.png" width="300" height="300" />
+<img src="/assets/6.png" width="600" height="700" />
 
 
 ## Product Highlights
@@ -55,10 +55,10 @@ Sunspot currently delivers a multi-feature mobile application with:
 - visibility into quotes, active orders, and installation progress
 - simple, mobile-first navigation for non-technical users
 
-<img src="/assets/7.png" width="300" height="300" />
+<img src="/assets/7.png" width="600" height="700" />
 
 
-<img src="/assets/8.png" width="300" height="300" />
+<img src="/assets/8.png" width="600" height="700" />
 
 
 ### Staff App
@@ -105,10 +105,10 @@ lib/
 ```
 
 
-<img src="/assets/9.png" width="600" height="400" />
+<img src="/assets/9.png" width="600" height="700" />
 
 
-<img src="/assets/10.png" width="600" height="400" />
+<img src="/assets/10.png" width="600" height="700" />
 
 
 ### Design Principles
