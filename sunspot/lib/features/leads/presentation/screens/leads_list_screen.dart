@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sunspot/shared/widgets/badges/status_badge.dart';
 import 'package:sunspot/shared/widgets/cards/app_card.dart';
 import 'package:sunspot/shared/widgets/layout/screen_wrapper.dart';
+import 'package:sunspot/shared/widgets/loading/circular_spinner.dart';
 import 'package:sunspot/features/leads/bloc/leads_bloc.dart';
 import 'package:sunspot/features/leads/bloc/leads_event.dart';
 import 'package:sunspot/features/leads/bloc/leads_state.dart';
@@ -39,7 +40,7 @@ class _LeadsListScreenState extends State<LeadsListScreen> {
           child: BlocBuilder<LeadsBloc, LeadsState>(
             builder: (context, state) {
               if (state is LeadsLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CircularSpinner());
               }
 
               if (state is LeadsError) {

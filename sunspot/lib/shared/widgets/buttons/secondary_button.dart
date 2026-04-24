@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/loading/circular_spinner.dart';
 
 class SecondaryButton extends StatelessWidget {
   final String label;
@@ -28,14 +29,7 @@ class SecondaryButton extends StatelessWidget {
         ),
         onPressed: isLoading ? null : onPressed,
         child: isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                ),
-              )
+            ? const CircularSpinner(size: 20, color: AppColors.primary)
             : Text(label, style: const TextStyle(fontSize: 16)),
       ),
     );

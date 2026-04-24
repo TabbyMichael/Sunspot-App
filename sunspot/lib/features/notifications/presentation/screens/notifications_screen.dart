@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sunspot/shared/widgets/cards/app_card.dart';
 import 'package:sunspot/shared/widgets/layout/screen_wrapper.dart';
+import 'package:sunspot/shared/widgets/loading/circular_spinner.dart';
 import 'package:sunspot/features/auth/bloc/auth_bloc.dart';
 import 'package:sunspot/features/auth/bloc/auth_state.dart';
 
@@ -65,6 +67,25 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       isRead: true,
     ),
   ];
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _simulateLoading();
+  }
+
+  Future<void> _simulateLoading() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,118 +103,135 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           showDrawer: true,
           userRole: userRole,
           userName: userName,
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${_notifications.where((n) => !n.isRead).length} unread',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFF9CA3AF),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        for (var notification in _notifications) {
-                          notification.isRead = true;
-                        }
-                      });
-                    },
-                    child: const Text(
-                      'Mark all as read',
-                      style: TextStyle(color: Color(0xFFF59E0B)),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _notifications.length,
-                itemBuilder: (context, index) {
-                  final notification = _notifications[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: AppCard(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: _getNotificationColor(
-                                notification.type,
-                              ).withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              _getNotificationIcon(notification.type),
-                              color: _getNotificationColor(notification.type),
-                              size: 24,
-                            ),
+          child: _isLoading
+              ? const Center(child: CircularSpinner())
+              : Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${_notifications.where((n) => !n.isRead).length} unread',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF9CA3AF),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      notification.title,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: notification.isRead
-                                            ? FontWeight.normal
-                                            : FontWeight.w600,
-                                        color: Colors.white,
-                                      ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              for (var notification in _notifications) {
+                                notification.isRead = true;
+                              }
+                            });
+                          },
+                          child: const Text(
+                            'Mark all as read',
+                            style: TextStyle(color: Color(0xFFF59E0B)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _notifications.length,
+                      itemBuilder: (context, index) {
+                        final notification = _notifications[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: InkWell(
+                            onTap: () {
+                              context.go(
+                                '/dashboard/notifications/${notification.id}',
+                                extra: notification,
+                              );
+                              setState(() {
+                                notification.isRead = true;
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(12),
+                            child: AppCard(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: 48,
+                                    height: 48,
+                                    decoration: BoxDecoration(
+                                      color: _getNotificationColor(
+                                        notification.type,
+                                      ).withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    if (!notification.isRead)
-                                      Container(
-                                        width: 8,
-                                        height: 8,
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFFF59E0B),
-                                          shape: BoxShape.circle,
-                                        ),
+                                    child: Icon(
+                                      _getNotificationIcon(notification.type),
+                                      color: _getNotificationColor(
+                                        notification.type,
                                       ),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  notification.message,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Color(0xFF9CA3AF),
+                                      size: 24,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  _formatDate(notification.createdAt),
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xFF6B7280),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              notification.title,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: notification.isRead
+                                                    ? FontWeight.normal
+                                                    : FontWeight.w600,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            if (!notification.isRead)
+                                              Container(
+                                                width: 8,
+                                                height: 8,
+                                                decoration: const BoxDecoration(
+                                                  color: Color(0xFFF59E0B),
+                                                  shape: BoxShape.circle,
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          notification.message,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xFF9CA3AF),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          _formatDate(notification.createdAt),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Color(0xFF6B7280),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            ],
-          ),
+                  ],
+                ),
         );
       },
     );

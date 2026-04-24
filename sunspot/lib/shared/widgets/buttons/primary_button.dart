@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sunspot/core/theme/app_colors.dart';
+import 'package:sunspot/core/providers/haptics_provider.dart';
+import 'package:sunspot/shared/widgets/loading/circular_spinner.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String label;
@@ -17,6 +19,8 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final haptics = HapticsProvider.of(context);
+
     return SizedBox(
       height: 48,
       width: double.infinity,
@@ -28,16 +32,14 @@ class PrimaryButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        onPressed: isEnabled && !isLoading ? onPressed : null,
+        onPressed: isEnabled && !isLoading
+            ? () {
+                haptics.lightImpact();
+                onPressed();
+              }
+            : null,
         child: isLoading
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
+            ? const CircularSpinner(size: 20, color: Colors.white)
             : Text(label, style: const TextStyle(fontSize: 16)),
       ),
     );

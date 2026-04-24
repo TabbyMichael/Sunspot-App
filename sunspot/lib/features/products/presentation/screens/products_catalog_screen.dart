@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sunspot/shared/widgets/cards/app_card.dart';
 import 'package:sunspot/shared/widgets/layout/screen_wrapper.dart';
 import 'package:sunspot/shared/widgets/buttons/primary_button.dart';
+import 'package:sunspot/shared/widgets/loading/circular_spinner.dart';
 import 'package:sunspot/features/products/bloc/products_bloc.dart';
 import 'package:sunspot/features/products/bloc/cart_bloc.dart';
 import 'package:sunspot/features/products/bloc/products_event.dart';
@@ -161,7 +162,7 @@ class _ProductsCatalogScreenState extends State<ProductsCatalogScreen> {
                 child: BlocBuilder<ProductsBloc, ProductsState>(
                   builder: (context, state) {
                     if (state is ProductsLoading) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularSpinner());
                     }
 
                     if (state is ProductsError) {

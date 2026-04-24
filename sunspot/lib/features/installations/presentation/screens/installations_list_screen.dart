@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sunspot/shared/widgets/badges/status_badge.dart';
 import 'package:sunspot/shared/widgets/cards/app_card.dart';
 import 'package:sunspot/shared/widgets/layout/screen_wrapper.dart';
+import 'package:sunspot/shared/widgets/loading/circular_spinner.dart';
 import 'package:sunspot/features/installations/bloc/installations_bloc.dart';
 import 'package:sunspot/features/installations/bloc/installations_event.dart';
 import 'package:sunspot/features/installations/bloc/installations_state.dart';
@@ -43,7 +44,7 @@ class _InstallationsListScreenState extends State<InstallationsListScreen> {
           child: BlocBuilder<InstallationsBloc, InstallationsState>(
             builder: (context, state) {
               if (state is InstallationsLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CircularSpinner());
               }
 
               if (state is InstallationsError) {

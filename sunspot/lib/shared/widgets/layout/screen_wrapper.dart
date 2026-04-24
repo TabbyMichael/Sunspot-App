@@ -8,6 +8,7 @@ class ScreenWrapper extends StatelessWidget {
   final String? title;
   final Color? appBarTitleColor;
   final List<Widget>? actions;
+  final Widget? leading;
   final bool showDrawer;
   final String? userRole;
   final String? userName;
@@ -18,6 +19,7 @@ class ScreenWrapper extends StatelessWidget {
     this.title,
     this.appBarTitleColor,
     this.actions,
+    this.leading,
     this.showDrawer = false,
     this.userRole,
     this.userName,
@@ -47,8 +49,9 @@ class ScreenWrapper extends StatelessWidget {
                           : Colors.white),
                 ),
               ),
+              leading: leading,
               actions: actions,
-              automaticallyImplyLeading: showDrawer,
+              automaticallyImplyLeading: showDrawer && leading == null,
             )
           : null,
       body: SafeArea(

@@ -5,6 +5,8 @@ import 'core/theme/theme_bloc.dart';
 import 'core/services/api_service.dart';
 import 'core/services/secure_storage_service.dart';
 import 'core/services/onboarding_service.dart';
+import 'core/services/haptics_service.dart';
+import 'core/providers/haptics_provider.dart';
 import 'core/router/app_router.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/data/auth_repository.dart';
@@ -28,10 +30,14 @@ Future<void> main() async {
   final onboardingCompleted = await onboardingService.isCompleted();
   final onboardingStatus = ValueNotifier<bool>(onboardingCompleted);
 
+  final hapticsService = HapticsService();
+  await hapticsService.initialize();
+
   runApp(
     SunspotApp(
       onboardingService: onboardingService,
       onboardingStatus: onboardingStatus,
+      hapticsService: hapticsService,
     ),
   );
 }
@@ -39,11 +45,13 @@ Future<void> main() async {
 class SunspotApp extends StatelessWidget {
   final OnboardingService onboardingService;
   final ValueNotifier<bool> onboardingStatus;
+  final HapticsService hapticsService;
 
   const SunspotApp({
     super.key,
     required this.onboardingService,
     required this.onboardingStatus,
+    required this.hapticsService,
   });
 
   @override
@@ -70,33 +78,36 @@ class SunspotApp extends StatelessWidget {
     final productsBloc = ProductsBloc(productsRepository);
     final cartBloc = CartBloc();
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: authBloc),
-        BlocProvider.value(value: leadsBloc),
-        BlocProvider.value(value: installationsBloc),
-        BlocProvider.value(value: quotesBloc),
-        BlocProvider.value(value: ordersBloc),
-        BlocProvider.value(value: productsBloc),
-        BlocProvider.value(value: cartBloc),
-        BlocProvider(create: (_) => ThemeBloc()),
-      ],
-      child: BlocBuilder<ThemeBloc, ThemeState>(
-        builder: (context, themeState) {
-          return MaterialApp.router(
-            title: 'Sunspot Solar',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: themeState.mode == AppThemeMode.dark
-                ? ThemeMode.dark
-                : ThemeMode.light,
-            routerConfig: AppRouter(
-              onboardingService: onboardingService,
-              onboardingStatus: onboardingStatus,
-            ).createRouter(authBloc),
-          );
-        },
+    return HapticsProvider(
+      hapticsService: hapticsService,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: authBloc),
+          BlocProvider.value(value: leadsBloc),
+          BlocProvider.value(value: installationsBloc),
+          BlocProvider.value(value: quotesBloc),
+          BlocProvider.value(value: ordersBloc),
+          BlocProvider.value(value: productsBloc),
+          BlocProvider.value(value: cartBloc),
+          BlocProvider(create: (_) => ThemeBloc()),
+        ],
+        child: BlocBuilder<ThemeBloc, ThemeState>(
+          builder: (context, themeState) {
+            return MaterialApp.router(
+              title: 'Sunspot Solar',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeState.mode == AppThemeMode.dark
+                  ? ThemeMode.dark
+                  : ThemeMode.light,
+              routerConfig: AppRouter(
+                onboardingService: onboardingService,
+                onboardingStatus: onboardingStatus,
+              ).createRouter(authBloc),
+            );
+          },
+        ),
       ),
     );
   }

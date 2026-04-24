@@ -47,6 +47,7 @@ dependencies:
   # Authentication & Storage
   flutter_secure_storage: ^9.0.0
   jwt_decoder: ^2.0.1
+  shared_preferences: ^2.2.2
 
   # Navigation
   go_router: ^13.0.0

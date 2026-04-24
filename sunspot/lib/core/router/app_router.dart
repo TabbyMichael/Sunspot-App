@@ -18,8 +18,11 @@ import '../../features/leads/presentation/screens/lead_detail_screen.dart';
 import '../../features/installations/presentation/screens/installations_list_screen.dart';
 import '../../features/installations/presentation/screens/installation_timeline_screen.dart';
 import '../../features/quotes/presentation/screens/quotes_list_screen.dart';
+import '../../features/quotes/presentation/screens/quote_detail_screen.dart';
 import '../../features/orders/presentation/screens/orders_list_screen.dart';
+import '../../features/orders/presentation/screens/order_detail_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
+import '../../features/notifications/presentation/screens/notification_detail_screen.dart';
 import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/products/presentation/screens/products_catalog_screen.dart';
 import '../../features/products/presentation/screens/cart_screen.dart';
@@ -153,16 +156,46 @@ class AppRouter {
               path: 'quotes',
               name: 'quotes',
               builder: (context, state) => const QuotesListScreen(),
+              routes: [
+                GoRoute(
+                  path: ':quoteId',
+                  name: 'quoteDetails',
+                  builder: (context, state) {
+                    final quoteId = state.pathParameters['quoteId']!;
+                    return QuoteDetailScreen(quoteId: quoteId);
+                  },
+                ),
+              ],
             ),
             GoRoute(
               path: 'orders',
               name: 'orders',
               builder: (context, state) => const OrdersListScreen(),
+              routes: [
+                GoRoute(
+                  path: ':orderId',
+                  name: 'orderDetails',
+                  builder: (context, state) {
+                    final orderId = state.pathParameters['orderId']!;
+                    return OrderDetailScreen(orderId: orderId);
+                  },
+                ),
+              ],
             ),
             GoRoute(
               path: 'notifications',
               name: 'notifications',
               builder: (context, state) => const NotificationsScreen(),
+              routes: [
+                GoRoute(
+                  path: ':notificationId',
+                  name: 'notificationDetails',
+                  builder: (context, state) {
+                    final notification = state.extra as dynamic;
+                    return NotificationDetailScreen(notification: notification);
+                  },
+                ),
+              ],
             ),
             GoRoute(
               path: 'settings',

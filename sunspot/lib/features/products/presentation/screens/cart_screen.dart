@@ -4,13 +4,39 @@ import 'package:go_router/go_router.dart';
 import 'package:sunspot/shared/widgets/cards/app_card.dart';
 import 'package:sunspot/shared/widgets/layout/screen_wrapper.dart';
 import 'package:sunspot/shared/widgets/buttons/primary_button.dart';
+import 'package:sunspot/shared/widgets/loading/circular_spinner.dart';
 import 'package:sunspot/features/products/bloc/cart_bloc.dart';
 import 'package:sunspot/features/products/data/models/product.dart';
 import 'package:sunspot/features/auth/bloc/auth_bloc.dart';
 import 'package:sunspot/features/auth/bloc/auth_state.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
+
+  @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _simulateLoading();
+  }
+
+  Future<void> _simulateLoading() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,187 +54,202 @@ class CartScreen extends StatelessWidget {
           showDrawer: true,
           userRole: userRole,
           userName: userName,
-          child: BlocBuilder<CartBloc, CartState>(
-            builder: (context, cartState) {
-              if (cartState is! CartLoaded || cartState.items.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.shopping_cart_outlined,
-                        size: 64,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? const Color(0xFF9CA3AF)
-                            : const Color(0xFFD1D5DB),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Your cart is empty',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? const Color(0xFF9CA3AF)
-                              : const Color(0xFF6B7280),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      PrimaryButton(
-                        label: 'Start Shopping',
-                        onPressed: () {
-                          context.go('/dashboard/shop');
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              final items = cartState.items;
-              final totalAmount = cartState.totalAmount;
-              final itemCount = cartState.itemCount;
-
-              return Column(
-                children: [
-                  // Cart Summary
-                  AppCard(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '$itemCount items',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF9CA3AF)
-                                : const Color(0xFF6B7280),
-                          ),
-                        ),
-                        Text(
-                          'Total: KES ${totalAmount.toStringAsFixed(0)}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFF59E0B),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Cart Items
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        final cartItem = items[index];
-                        return _CartItemTile(cartItem: cartItem);
-                      },
-                    ),
-                  ),
-
-                  // Checkout Button
-                  AppCard(
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: _isLoading
+              ? const Center(child: CircularSpinner())
+              : BlocBuilder<CartBloc, CartState>(
+                  builder: (context, cartState) {
+                    if (cartState is! CartLoaded || cartState.items.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              'Subtotal',
-                              style: TextStyle(
-                                color:
-                                    Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? const Color(0xFF9CA3AF)
-                                    : const Color(0xFF6B7280),
-                              ),
+                            Icon(
+                              Icons.shopping_cart_outlined,
+                              size: 64,
+                              color:
+                                  Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? const Color(0xFF9CA3AF)
+                                  : const Color(0xFFD1D5DB),
                             ),
+                            const SizedBox(height: 16),
                             Text(
-                              'KES ${totalAmount.toStringAsFixed(0)}',
+                              'Your cart is empty',
                               style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color:
-                                    Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white
-                                    : const Color(0xFF111827),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Delivery',
-                              style: TextStyle(
-                                color:
-                                    Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? const Color(0xFF9CA3AF)
-                                    : const Color(0xFF6B7280),
-                              ),
-                            ),
-                            Text(
-                              'KES 5,000',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color:
-                                    Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white
-                                    : const Color(0xFF111827),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Divider(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? const Color(0xFF374151)
-                              : const Color(0xFFE5E7EB),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Total',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white
-                                    : const Color(0xFF111827),
-                              ),
-                            ),
-                            Text(
-                              'KES ${(totalAmount + 5000).toStringAsFixed(0)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
                                 fontSize: 18,
-                                color: Color(0xFFF59E0B),
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? const Color(0xFF9CA3AF)
+                                    : const Color(0xFF6B7280),
                               ),
                             ),
+                            const SizedBox(height: 16),
+                            PrimaryButton(
+                              label: 'Start Shopping',
+                              onPressed: () {
+                                context.go('/dashboard/shop');
+                              },
+                            ),
                           ],
+                        ),
+                      );
+                    }
+
+                    final items = cartState.items;
+                    final totalAmount = cartState.totalAmount;
+                    final itemCount = cartState.itemCount;
+
+                    return Column(
+                      children: [
+                        // Cart Summary
+                        AppCard(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '$itemCount items',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color:
+                                      Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? const Color(0xFF9CA3AF)
+                                      : const Color(0xFF6B7280),
+                                ),
+                              ),
+                              Text(
+                                'Total: KES ${totalAmount.toStringAsFixed(0)}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFF59E0B),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 16),
-                        PrimaryButton(
-                          label: 'Proceed to Checkout',
-                          onPressed: () {
-                            _showCheckoutDialog(context, totalAmount + 5000);
-                          },
+
+                        // Cart Items
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: items.length,
+                            itemBuilder: (context, index) {
+                              final cartItem = items[index];
+                              return _CartItemTile(cartItem: cartItem);
+                            },
+                          ),
+                        ),
+
+                        // Checkout Button
+                        AppCard(
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Subtotal',
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? const Color(0xFF9CA3AF)
+                                          : const Color(0xFF6B7280),
+                                    ),
+                                  ),
+                                  Text(
+                                    'KES ${totalAmount.toStringAsFixed(0)}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color:
+                                          Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : const Color(0xFF111827),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Delivery',
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? const Color(0xFF9CA3AF)
+                                          : const Color(0xFF6B7280),
+                                    ),
+                                  ),
+                                  Text(
+                                    'KES 5,000',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color:
+                                          Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : const Color(0xFF111827),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Divider(
+                                color:
+                                    Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? const Color(0xFF374151)
+                                    : const Color(0xFFE5E7EB),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Total',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : const Color(0xFF111827),
+                                    ),
+                                  ),
+                                  Text(
+                                    'KES ${(totalAmount + 5000).toStringAsFixed(0)}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Color(0xFFF59E0B),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              PrimaryButton(
+                                label: 'Proceed to Checkout',
+                                onPressed: () {
+                                  _showCheckoutDialog(
+                                    context,
+                                    totalAmount + 5000,
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
+                    );
+                  },
+                ),
         );
       },
     );
