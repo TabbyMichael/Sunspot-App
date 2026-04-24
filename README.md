@@ -2,10 +2,10 @@
 
 A comprehensive Flutter-based solar energy management application designed for solar companies to manage leads, installations, quotes, orders, and e-commerce operations. The app features role-based access control, real-time state management, and a modern dark/light theme UI.
 
-<img src="sunspot/assets/1.png" width="600" height="700" />
+<img src="sunspot/assets/1.png" width="800" height="1000" />
 
 
-<img src="sunspot/assets/2.png" width="600" height="700" />
+<img src="sunspot/assets/2.png" width="800" height="1000" />
 
 ## 🌟 Features
 
@@ -15,10 +15,10 @@ A comprehensive Flutter-based solar energy management application designed for s
 - **Navigation Drawer**: Context-aware navigation based on user role
 - **Real-time State Management**: BLoC pattern for efficient state handling
 
-<img src="sunspot/assets/3.png" width="600" height="600" />
+<img src="sunspot/assets/3.png" width="800" height="1000" />
 
 
-<img src="sunspot/assets/4.png" width="600" height="700" />
+<img src="sunspot/assets/4.png" width="800" height="1000" />
 
 ### Lead Management
 - View and manage customer leads
@@ -33,10 +33,10 @@ A comprehensive Flutter-based solar energy management application designed for s
 - Visual progress indicators
 - Installation history and details
 
-<img src="sunspot/assets/5.png" width="600" height="700" />
+<img src="sunspot/assets/5.png" width="800" height="1000" />
 
 
-<img src="sunspot/assets/6.png" width="600" height="700" />
+<img src="sunspot/assets/6.png" width="800" height="1000" />
 
 ### Quotes Management
 - Create and manage quotes
@@ -50,10 +50,10 @@ A comprehensive Flutter-based solar energy management application designed for s
 - Order history and details
 - Demo order data
 
-<img src="sunspot/assets/7.png" width="600" height="700" />
+<img src="sunspot/assets/7.png" width="800" height="1000" />
 
 
-<img src="sunspot/assets/8.png" width="600" height="700" />
+<img src="sunspot/assets/8.png" width="800" height="1000" />
 
 ### E-commerce
 - **Product Catalog**: Browse solar products with images, ratings, and reviews
@@ -75,10 +75,10 @@ A comprehensive Flutter-based solar energy management application designed for s
 - Push notifications preferences
 - Logout functionality
 
-<img src="sunspot/assets/9.png" width="600" height="700" />
+<img src="sunspot/assets/9.png" width="800" height="1000" />
 
 
-<img src="sunspot/assets/10.png" width="600" height="700" />
+<img src="sunspot/assets/10.png" width="800" height="1000" />
 
 ## 🛠 Tech Stack
 
