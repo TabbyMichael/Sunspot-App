@@ -7,6 +7,7 @@ import 'package:sunspot/shared/widgets/layout/screen_wrapper.dart';
 import 'package:sunspot/features/auth/bloc/auth_bloc.dart';
 import 'package:sunspot/features/auth/bloc/auth_event.dart';
 import 'package:sunspot/features/auth/bloc/auth_state.dart';
+import 'package:sunspot/core/providers/haptics_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,10 +30,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLogin() {
+    final haptics = HapticsProvider.of(context);
+
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
         LoginRequested(_emailController.text.trim(), _passwordController.text),
       );
+    } else {
+      // Validation failed - vibrate to indicate error
+      haptics.vibrate();
     }
   }
 
@@ -107,6 +113,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: secondaryTextColor,
                 ),
                 onPressed: () {
+                  final haptics = HapticsProvider.of(context);
+                  haptics.selectionClick();
                   setState(() {
                     _obscurePassword = !_obscurePassword;
                   });
@@ -116,10 +124,14 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 24),
             BlocConsumer<AuthBloc, AuthState>(
               listener: (context, state) {
+                final haptics = HapticsProvider.of(context);
+
                 if (state is AuthAuthenticated) {
+                  haptics.mediumImpact();
                   context.go('/dashboard');
                 }
                 if (state is AuthError) {
+                  haptics.vibrate();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(state.message),

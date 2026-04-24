@@ -11,6 +11,7 @@ import 'package:sunspot/shared/widgets/buttons/primary_button.dart';
 import 'package:sunspot/shared/widgets/cards/app_card.dart';
 import 'package:sunspot/shared/widgets/inputs/app_text_field.dart';
 import 'package:sunspot/shared/widgets/layout/screen_wrapper.dart';
+import 'package:sunspot/shared/widgets/loading/circular_spinner.dart';
 
 class InstallationTimelineScreen extends StatefulWidget {
   final String installationId;
@@ -57,7 +58,7 @@ class _InstallationTimelineScreenState
       child: BlocBuilder<InstallationsBloc, InstallationsState>(
         builder: (context, state) {
           if (state is InstallationsLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularSpinner());
           }
 
           if (state is InstallationsError) {
